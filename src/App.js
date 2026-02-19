@@ -1,60 +1,47 @@
-import React, { useState } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [num1, setNum1] = useState("");
-  const [num2, setNum2] = useState("");
-  const [result, setResult] = useState("");
+  const [teams, setTeams] = useState([]);
 
-  const add = () => {
-    setResult(Number(num1) + Number(num2));
-  };
-
-  const subtract = () => {
-    setResult(Number(num1) - Number(num2));
-  };
-
-  const multiply = () => {
-    setResult(Number(num1) * Number(num2));
-  };
-
-  const divide = () => {
-    if (num2 === "0") {
-      setResult("Cannot divide by zero");
-    } else {
-      setResult(Number(num1) / Number(num2));
-    }
-  };
+  useEffect(() => {
+    fetch("https://my-json-server.typicode.com/FreSauce/json-ipl/data")
+      .then((response) => response.json())
+      .then((data) => {
+        const sortedData = data.sort((a, b) => a.NRR - b.NRR);
+        setTeams(sortedData);
+      })
+      .catch((error) => console.error(error));
+  }, []);
 
   return (
-    <div className="container">
-      <h1>Calculator</h1>
+    <div style={{ padding: "20px" }}>
+      <h2>IPL 2022 Points Table</h2>
 
-      <input
-        type="number"
-        placeholder="Enter first number"
-        value={num1}
-        onChange={(e) => setNum1(e.target.value)}
-      />
+      <table border="1" cellPadding="10" cellSpacing="0">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Matches</th>
+            <th>Won</th>
+            <th>Lost</th>
+            <th>Points</th>
+            <th>NRR</th>
+          </tr>
+        </thead>
 
-      <input
-        type="number"
-        placeholder="Enter second number"
-        value={num2}
-        onChange={(e) => setNum2(e.target.value)}
-      />
-
-      <div className="buttons">
-        <button onClick={add}>Add</button>
-        <button onClick={subtract}>Subtract</button>
-        <button onClick={multiply}>Multiply</button>
-        <button onClick={divide}>Divide</button>
-      </div>
-
-      <div className="result">
-        <h3>Result:</h3>
-        <p>{result}</p>
-      </div>
+        <tbody>
+          {teams.map((team) => (
+            <tr key={team.Team}>
+              <td>{team.Team}</td>
+              <td>{team.Matches}</td>
+              <td>{team.Won}</td>
+              <td>{team.Lost}</td>
+              <td>{team.Points}</td>
+              <td>{team.NRR}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
