@@ -1,47 +1,47 @@
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 function App() {
-  const [teams, setTeams] = useState([]);
+  const [task, setTask] = useState("");
+  const [todos, setTodos] = useState([]);
 
-  useEffect(() => {
-    fetch("https://my-json-server.typicode.com/FreSauce/json-ipl/data")
-      .then((response) => response.json())
-      .then((data) => {
-        const sortedData = data.sort((a, b) => a.NRR - b.NRR);
-        setTeams(sortedData);
-      })
-      .catch((error) => console.error(error));
-  }, []);
+  // Add Task
+  const addTask = () => {
+    if (task.trim() === "") return;
+
+    const updatedTodos = [...todos, task];
+    updatedTodos.sort(); // ascending order
+
+    setTodos(updatedTodos);
+    setTask(""); // clear input field
+  };
+
+  // Delete Task
+  const deleteTask = (index) => {
+    const newTodos = todos.filter((_, i) => i !== index);
+    setTodos(newTodos);
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>IPL 2022 Points Table</h2>
+    <div>
+      <h2>Todo List</h2>
 
-      <table border="1" cellPadding="10" cellSpacing="0">
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>Matches</th>
-            <th>Won</th>
-            <th>Lost</th>
-            <th>Points</th>
-            <th>NRR</th>
-          </tr>
-        </thead>
+      <input
+        type="text"
+        value={task}
+        placeholder="Enter task"
+        onChange={(e) => setTask(e.target.value)}
+      />
 
-        <tbody>
-          {teams.map((team) => (
-            <tr key={team.Team}>
-              <td>{team.Team}</td>
-              <td>{team.Matches}</td>
-              <td>{team.Won}</td>
-              <td>{team.Lost}</td>
-              <td>{team.Points}</td>
-              <td>{team.NRR}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <button onClick={addTask}>Add</button>
+
+      <ul>
+        {todos.map((todo, index) => (
+          <li key={index}>
+            {todo}
+            <button onClick={() => deleteTask(index)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
